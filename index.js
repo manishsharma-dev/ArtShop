@@ -1,12 +1,12 @@
 const express = require("express");
 require("dotenv").config();
 const mongoose = require("mongoose");
-const morgan = require('morgan');
+const morgan = require("morgan");
 const app = express();
 
-
 //
-const userTypeRoutes = require('./routes/userTypeRoutes');
+const userTypeRoutes = require("./routes/userTypeRoutes");
+const userRoutes = require("./routes/UserRoutes");
 //
 mongoose
   .connect(process.env.DBURI, { useNewUrlParser: true })
@@ -19,6 +19,8 @@ mongoose
 
 app.use(express.json());
 
-app.use(morgan('dev'));
+app.use(morgan("dev"));
 
-app.use('/user-type',userTypeRoutes);
+app.use("/user", userRoutes);
+
+app.use("/user-type", userTypeRoutes);

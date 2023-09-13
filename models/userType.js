@@ -6,6 +6,7 @@ const userTypeSchema = new Schema(
     name: {
       type: String,
       required: true,
+      unique : true
     },
     createdBy: {
       type: String,
