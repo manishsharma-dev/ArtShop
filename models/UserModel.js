@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
     name : {
         required : true,
-        unique : true,
         type: String
     },
     email : {
@@ -12,14 +11,13 @@ const UserSchema = new Schema({
         unique : true,
         type: String
     },
-    mobile : {
-        required : true,
-        unique : true,
+    mobile : {                
         type: String
     },
     userType : {
         required : true,        
-        type: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref : 'UserType'
     }
 });
 

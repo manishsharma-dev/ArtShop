@@ -3,10 +3,9 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 const app = express();
-
+var apiRouter = require("./routes/ApiRoutes");
 //
-const userTypeRoutes = require("./routes/userTypeRoutes");
-const userRoutes = require("./routes/UserRoutes");
+
 //
 mongoose
   .connect(process.env.DBURI, { useNewUrlParser: true })
@@ -21,6 +20,6 @@ app.use(express.json());
 
 app.use(morgan("dev"));
 
-app.use("/user", userRoutes);
+app.use("/api/", apiRouter);
 
-app.use("/user-type", userTypeRoutes);
+
