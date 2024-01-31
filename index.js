@@ -3,8 +3,11 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 const app = express();
+const cookieParser = require('cookie-parser');
 var apiRouter = require("./routes/ApiRoutes");
 //
+
+app.use(cookieParser());
 
 //
 mongoose

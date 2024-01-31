@@ -4,9 +4,10 @@ const Password = require("../models/PasswordModel");
 const { getUserByParam } = require("../helpers/getUsersbyParamater");
 const { generateErrorMessage } = require("../helpers/GenerateErrorMessage");
 const apiResponse = require("../helpers/apiResponse");
-const bcrypt = require("bcrypt");
+const catchAsyncErrors = require("../middleware/catchAsyncErrors");
+const sendLoginResponse = require("../helpers/jwtToken")
 const jwt = require("jsonwebtoken");
-const login = async (req, res) => {
+const login = catchAsyncErrors(async (req, res) => {
   try {
     const request = { email: req.body.email };
     const userData = await getUserByParam(request).catch((err) => {
@@ -14,36 +15,19 @@ const login = async (req, res) => {
     });
     if (userData?.length) {
       const user = userData[0];
-      const userPassword = await Password.find({ userId: user._id }).catch(
-        (err) => {
-          throw err;
+      const userPassword = await Password.findOne({ userId: user._id });
+      if (userPassword) {
+        const response = await userPassword.comparePassword(req.body.password);
+        if (response) {
+          const userEmail = { email: req.body.email };
+          sendLoginResponse(user, 200, res);
+        } else {
+          return apiResponse.ErrorResponse(
+            res,
+            generateErrorMessage({ message: "Invalid email/password" })
+          );
         }
-      );
-      if (userPassword?.length) {
-        await bcrypt.compare(
-          req.body.password,
-          userPassword[0].password,
-          function (err, response) {
-            if (response) {
-              const userEmail = { email: req.body.email };
-              const accessToken = jwt.sign(
-                userEmail,
-                process.env.ACCESS_TOKEN_SECRET
-              );
-              const responseData = { userData: user, token: { accessToken } };
-              apiResponse.successResponseWithData(
-                res,
-                "Login Successfull",
-                responseData
-              );
-            } else {
-              return apiResponse.ErrorResponse(
-                res,
-                generateErrorMessage({ message: "Invalid email/password" })
-              );
-            }
-          }
-        );
+
       } else {
         return apiResponse.ErrorResponse(
           res,
@@ -59,7 +43,7 @@ const login = async (req, res) => {
   } catch (err) {
     return apiResponse.ErrorResponse(res, generateErrorMessage(err));
   }
-};
+});
 
 module.exports = {
   login,
