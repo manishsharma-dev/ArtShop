@@ -7,6 +7,8 @@ const apiResponse = require("../helpers/apiResponse");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const sendLoginResponse = require("../helpers/jwtToken")
 const jwt = require("jsonwebtoken");
+var CryptoJS = require("crypto-js");
+
 const login = catchAsyncErrors(async (req, res) => {
   try {
     const request = { email: req.body.email };
@@ -45,6 +47,23 @@ const login = catchAsyncErrors(async (req, res) => {
   }
 });
 
+const forgotPassword = catchAsyncErrors(async (req, res, next) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email: email });
+  if (user) {
+    const toHashString = CryptoJS.AES.encrypt(user._id, process.env.CRYPTO_SECRET);
+    
+    return apiResponse.successResponseWithData(res, null, user);
+  }
+  else {
+    return apiResponse.ErrorResponse(
+      res,
+      generateErrorMessage({ message: "Email not found! Please signup to use application" })
+    );
+  }
+})
+
 module.exports = {
   login,
+  forgotPassword
 };
