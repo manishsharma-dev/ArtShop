@@ -3,7 +3,7 @@ exports.successResponse = function (res, msg) {
 		status: true,
 		message: msg
 	};
-	return res.status(200).json(data);
+	return res.header({ 'Content-Type': 'application/json' }).status(200).json(data);
 };
 
 exports.successResponseWithData = function (res, msg, data) {
@@ -12,25 +12,25 @@ exports.successResponseWithData = function (res, msg, data) {
 		message: msg,
 		data: data
 	};
-	return res.status(200).json(resData);
+	return res.header({ 'Content-Type': 'application/json' }).status(200).json(resData);
 };
 
 exports.ErrorResponse = function (res, msg) {
 	var data = {
 		status: false,
 		message: msg,
-        data : null
+		data: null
 	};
-	return res.status(500).json(data);
+	return res.header({ 'Content-Type': 'application/json' }).status(500).json(data);
 };
 
 exports.notFoundResponse = function (res, msg) {
 	var data = {
 		status: false,
 		message: msg,
-        data : null
+		data: null
 	};
-	return res.status(404).json(data);
+	return res.header({ 'Content-Type': 'application/json' }).status(404).json(data);
 };
 
 exports.validationErrorWithData = function (res, msg, data) {
@@ -39,14 +39,14 @@ exports.validationErrorWithData = function (res, msg, data) {
 		message: msg,
 		data: data
 	};
-	return res.status(400).json(resData);
+	return res.header({ 'Content-Type': 'application/json' }).status(400).json(resData);
 };
 
 exports.unauthorizedResponse = function (res, code, msg) {
 	var data = {
 		status: false,
 		message: msg,
-		data : null
+		data: null
 	};
-	res.status(code).json(data);
+	res.header({ 'Content-Type': 'application/json' }).status(code).json(data);
 };
