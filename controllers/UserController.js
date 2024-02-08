@@ -7,6 +7,8 @@ const { getUserByParam } = require("../helpers/getUsersbyParamater");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const get_Users = (req, res) => {
     User.find()
+        .populate('gender')
+        .populate('country')
         .sort({ createdAt: -1 })
         .then((response) => {
             return apiResponse.successResponseWithData(res, null, response);
@@ -31,7 +33,9 @@ const post_User = async (req, res) => {
     try {
         const user = new User(req.body);
         const newUser = await user.save().catch((err) => { throw err });
-        await PasswordSave({ userId: newUser._id, password: req.body.password }).catch((err) => { throw err });
+        if (req.body.password) {
+            await PasswordSave({ userId: newUser._id, password: req.body.password }).catch((err) => { throw err });
+        }
         // .then((response) => {
         return apiResponse.successResponseWithData(res, "User created successfully", newUser);
     }

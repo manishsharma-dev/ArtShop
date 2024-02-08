@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const jwt = require('jsonwebtoken');
+const ConfigValues = require('./configValues'); 
 const UserSchema = new Schema({
     name: {
         required: true,
@@ -18,6 +19,35 @@ const UserSchema = new Schema({
         required: true,
         type: mongoose.Schema.Types.ObjectId,
         ref: 'UserType'
+    },
+    gender: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ConfigValues',
+        required: [true, 'Please select a gender']
+    },
+    dob: {
+        type: Date
+    },
+
+    country: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ConfigValues',
+        required: [true, 'Please enter the country for artist'],
+    },
+    bio: {
+        type: String
+    },
+    isActive: {
+        type: Boolean,
+        default: true,
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
     }
 });
 

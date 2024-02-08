@@ -6,6 +6,7 @@ const { generateErrorMessage } = require("../helpers/GenerateErrorMessage");
 const apiResponse = require("../helpers/apiResponse");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const sendLoginResponse = require("../helpers/jwtToken");
+const UserController = require("../controllers/UserController");
 const sendEmail = require("../helpers/sendMail")
 const jwt = require("jsonwebtoken");
 var CryptoJS = require("crypto-js");
@@ -13,11 +14,12 @@ var CryptoJS = require("crypto-js");
 const login = catchAsyncErrors(async (req, res) => {
   try {
     const request = { email: req.body.email };
-    const userData = await getUserByParam(request).catch((err) => {
-      throw err;
-    });
-    if (userData?.length) {
-      const user = userData[0];
+    const userData = await User.findOne(request).populate('gender')
+      .populate('country').populate('userType').catch((err) => {
+        throw err;
+      });
+    if (userData) {
+      const user = userData;
       const userPassword = await Password.findOne({ userId: user._id });
       if (userPassword) {
         const response = await userPassword.comparePassword(req.body.password);
@@ -25,20 +27,20 @@ const login = catchAsyncErrors(async (req, res) => {
           const userEmail = { email: req.body.email };
           sendLoginResponse(user, 200, res);
         } else {
-          return apiResponse.ErrorResponse(
+          return apiResponse.notFoundResponse(
             res,
             generateErrorMessage({ message: "Invalid email/password" })
           );
         }
 
       } else {
-        return apiResponse.ErrorResponse(
+        return apiResponse.notFoundResponse(
           res,
           generateErrorMessage({ message: "Invalid email/password" })
         );
       }
     } else {
-      return apiResponse.ErrorResponse(
+      return apiResponse.notFoundResponse(
         res,
         generateErrorMessage({ message: "Invalid email/password" })
       );
@@ -47,6 +49,13 @@ const login = catchAsyncErrors(async (req, res) => {
     return apiResponse.ErrorResponse(res, generateErrorMessage(err));
   }
 });
+
+const register = catchAsyncErrors(async (req, res) => {
+  const request = req.body;
+  request.userType = "650086b7fd2d9e9d6690f739";
+  req.body = request;
+  const registeredUser = await UserController.post_User(req, res);  
+})
 
 const forgotPassword = catchAsyncErrors(async (req, res, next) => {
   const { email } = req.body;
@@ -86,7 +95,7 @@ const resetPassword = catchAsyncErrors(async (req, res, next) => {
       generateErrorMessage({ message: "Invalid request, Please check your request and try again" })
     );
   }
-  const passwordModel = await Password.findOne({ userId : userId });
+  const passwordModel = await Password.findOne({ userId: userId });
   if (!passwordModel) {
     return apiResponse.ErrorResponse(
       res,
@@ -100,6 +109,7 @@ const resetPassword = catchAsyncErrors(async (req, res, next) => {
 
 module.exports = {
   login,
+  register,
   forgotPassword,
   resetPassword
 };

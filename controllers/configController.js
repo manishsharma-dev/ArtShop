@@ -1,5 +1,6 @@
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const Config = require("../models/config");
+const ConfigValues = require("../models/configValues");
 const apiResponse = require("../helpers/apiResponse");
 
 const getMultipleConfig = catchAsyncErrors(async (req, res, next) => {
@@ -11,8 +12,10 @@ const getMultipleConfig = catchAsyncErrors(async (req, res, next) => {
     return apiResponse.successResponseWithData(res, null, config);
 })
 
-const postNewConfig = catchAsyncErrors(async (req, res, next) => {
+const postNewConfig = catchAsyncErrors(async (req, res, next) => {    
+    const configValues = await ConfigValues.insertMany(req.body.values);
     const config = new Config(req.body);
+    config.values = configValues;
     const newConfig = await config.save();
     return apiResponse.successResponseWithData(res, "Config created successfully", newConfig);
 })
