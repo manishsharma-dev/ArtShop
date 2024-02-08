@@ -18,6 +18,7 @@ const login = catchAsyncErrors(async (req, res) => {
       .populate('country').populate('userType').catch((err) => {
         throw err;
       });
+    
     if (userData) {
       const user = userData;
       const userPassword = await Password.findOne({ userId: user._id });
@@ -54,7 +55,7 @@ const register = catchAsyncErrors(async (req, res) => {
   const request = req.body;
   request.userType = "650086b7fd2d9e9d6690f739";
   req.body = request;
-  const registeredUser = await UserController.post_User(req, res);  
+  const registeredUser = await UserController.post_User(req, res);
 })
 
 const forgotPassword = catchAsyncErrors(async (req, res, next) => {
