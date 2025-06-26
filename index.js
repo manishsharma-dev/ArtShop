@@ -8,7 +8,7 @@ const cookieParser = require('cookie-parser');
 var apiRouter = require("./routes/ApiRoutes");
 //
 const corsOptions = {
-  origin:  process.env.NODE_ENV === 'PRODUCTION' ? process.env.FRONT_END_URL : process.env.FRONT_END_URL_LOCAL , // Allow requests from this origin
+  origin:  [process.env.FRONT_END_URL_LOCAL, process.env.FRONT_END_URL, 'http://localhost:8080/']  , // Allow requests from this origin
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],      // Allow only specified HTTP methods
   allowedHeaders: ['Content-Type', 'Authorization'], // Allow only specified headers
   credentials: true,  // Allows cookies
