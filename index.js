@@ -8,7 +8,7 @@ const cookieParser = require('cookie-parser');
 var apiRouter = require("./routes/ApiRoutes");
 //
 const corsOptions = {
-  origin:  [process.env.FRONT_END_URL_LOCAL, process.env.FRONT_END_URL, 'http://localhost:8080/']  , // Allow requests from this origin
+  origin:  ['https://the-art-gallery-2b600.web.app', 'http://localhost:4200', 'http://localhost:8080']  , // Allow requests from this origin
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],      // Allow only specified HTTP methods
   allowedHeaders: ['Content-Type', 'Authorization'], // Allow only specified headers
   credentials: true,  // Allows cookies
