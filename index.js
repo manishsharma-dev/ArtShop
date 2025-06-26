@@ -8,7 +8,7 @@ const cookieParser = require('cookie-parser');
 var apiRouter = require("./routes/ApiRoutes");
 //
 const corsOptions = {
-  origin: process.env.FRONT_END_URL, // Allow requests from this origin
+  origin:  process.env.NODE_ENV === 'PRODUCTION' ? process.env.FRONT_END_URL : process.env.FRONT_END_URL_LOCAL , // Allow requests from this origin
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],      // Allow only specified HTTP methods
   allowedHeaders: ['Content-Type', 'Authorization'], // Allow only specified headers
   credentials: true,  // Allows cookies
@@ -45,7 +45,7 @@ app.use("/api/", apiRouter);
 
 // Handling Unhandled Promise Rejection
 process.on('unhandledRejection', err => {
-  console.log(`Error: ${err.message}`);
+  console.log(`Error: ${err} - ${err.message}`);
   console.log('Shutting down the server due to Unhandled promise rejection.')
   server.close(() => {
     process.exit(1);
