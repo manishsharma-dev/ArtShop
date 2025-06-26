@@ -10,7 +10,8 @@ var apiRouter = require("./routes/ApiRoutes");
 const corsOptions = {
   origin: process.env.FRONT_END_URL, // Allow requests from this origin
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],      // Allow only specified HTTP methods
-  allowedHeaders: ['Content-Type'], // Allow only specified headers
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allow only specified headers
+  credentials: true,  // Allows cookies
   optionsSuccessStatus: 200      // Some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 

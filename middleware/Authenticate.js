@@ -10,17 +10,24 @@ const authenticate = async (req, res, next) => {
     unauthorizedResponse(res, 401, "Unauthorised Api Call");
     return;
   }
-  const user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-  if (!user) unauthorizedResponse(res, 403, "Unauthorised Api Call");
-  const userData = await getUserByParam({ email: user.email }).catch(
+  try{
+    const user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    if (!user) unauthorizedResponse(res, 403, "Unauthorised Api Call");
+     const userData = await getUserByParam({ email: user.email }).catch(
     (err) => {
-      unauthorizedResponse(res, 401, "Unauthorised Api Call");
+      unauthorizedResponse(res, 403, "Unauthorised Api Call");
       return;
     }
-  );
-  req.user = userData;
-  next();
-  ;
+    );
+    req.user = userData;
+    next();
+  }
+  catch (err) {
+    if (err.name === 'TokenExpiredError') {
+    return unauthorizedResponse(res, 401, "Unauthorised Api Call"); // ✅ More semantically correct
+  }
+    return unauthorizedResponse(res, 403, "Unauthorised Api Call");
+  }
 };
 
 module.exports = authenticate;

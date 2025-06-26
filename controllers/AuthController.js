@@ -21,7 +21,7 @@ const login = catchAsyncErrors(async (req, res) => {
     
     if (userData) {
       const user = userData;
-      const userPassword = await Password.findOne({ userId: user._id });
+      const userPassword = await Password.findOne({ userId: user._id});
       if (userPassword) {
         const response = await userPassword.comparePassword(req.body.password);
         if (response) {
@@ -49,6 +49,44 @@ const login = catchAsyncErrors(async (req, res) => {
   } catch (err) {
     return apiResponse.ErrorResponse(res, generateErrorMessage(err));
   }
+});
+
+const adminRefreshToken = catchAsyncErrors(async (req, res) => {
+  const token = req.cookies.token;
+  if (!token) return res.sendStatus(401);
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+    const user = await User.findOne({email: payload.email});
+    if (!user || user.refreshToken !== token) return res.sendStatus(403);
+
+    const newAccessToken = user.getJwtToken();
+    res.json({ accessToken: newAccessToken });
+  } catch (err) {
+    return res.sendStatus(403);
+  }
+
+});
+
+const logout = catchAsyncErrors(async (req, res) => {
+  const token = req.cookies.token;
+  if (token) {
+    const payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+    const user = await User.findById(payload.userId);
+    if (user) {
+      user.refreshToken = null;
+      await user.save();
+    }
+  }
+  res.clearCookie('token', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'None'
+  });
+  return res.status(200).json({
+      status: true,
+      message: "Logout successful"
+    });
 });
 
 const register = catchAsyncErrors(async (req, res) => {
@@ -110,6 +148,8 @@ const resetPassword = catchAsyncErrors(async (req, res, next) => {
 
 module.exports = {
   login,
+  logout,
+  adminRefreshToken,
   register,
   forgotPassword,
   resetPassword

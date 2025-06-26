@@ -48,6 +48,9 @@ const UserSchema = new Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    refreshToken: {
+        type: String
     }
 });
 
@@ -55,6 +58,12 @@ UserSchema.methods.getJwtToken = function () {
     return jwt.sign({ email: this.email },
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRES_IN })
+}
+
+UserSchema.methods.getRefreshToken = function () {
+    return jwt.sign({ email: this.email },
+        process.env.JWT_REFRESH_SECRET,
+        { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN })
 }
 
 
