@@ -7,4 +7,6 @@ router.get("/",authenticate, userTypeController.get_userType);
 
 router.post("/",authenticate, userTypeController.post_userType);
 
+router.put('/:id',authenticate, userTypeController.update_userType);
+
 module.exports = router;

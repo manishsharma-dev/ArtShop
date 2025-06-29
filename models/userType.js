@@ -8,6 +8,11 @@ const userTypeSchema = new Schema(
       required: true,
       unique : true
     },
+    shortCode: {
+      type: String,
+      required:true,
+      unique:true
+    },
     createdBy: {
       type: String,
       required: true,

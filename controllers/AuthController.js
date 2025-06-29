@@ -70,23 +70,31 @@ const adminRefreshToken = catchAsyncErrors(async (req, res) => {
 
 const logout = catchAsyncErrors(async (req, res) => {
   const token = req.cookies.token;
+
   if (token) {
-    const payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-    const user = await User.findById(payload.userId);
-    if (user) {
-      user.refreshToken = null;
-      await user.save();
+    // Use decode instead of verify to extract userId even if token is expired
+    const payload = jwt.decode(token);
+
+    if (payload && payload.userId) {
+      const user = await User.findById(payload.userId);
+      if (user) {
+        user.refreshToken = null; // Invalidate the stored refresh token
+        await user.save();
+      }
     }
   }
+
+  // Clear the cookie on client side
   res.clearCookie('token', {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None'
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None'
   });
+
   return res.status(200).json({
-      status: true,
-      message: "Logout successful"
-    });
+    status: true,
+    message: "Logout successful"
+  });
 });
 
 const register = catchAsyncErrors(async (req, res) => {
