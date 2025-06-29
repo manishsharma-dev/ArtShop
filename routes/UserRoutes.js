@@ -9,4 +9,6 @@ router.get("/:id", authenticate, UserController.get_UserbyId);
 
 router.post("/", UserController.post_User);
 
+router.put("/:id", authenticate, UserController.update_User);
+
 module.exports = router;

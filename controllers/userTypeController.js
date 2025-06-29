@@ -29,29 +29,33 @@ const post_userType = (req, res) => {
 };
 
 const update_userType = (req, res) => {
-    const {id} = req.params;
-    UserType.findByIdAndUpdate(id, req.body, { new: true, runValidators: true })
-      .then((response) => {
-        if(!response){
-          return res.status(404).send({
-            data:null,
-            message:"UserType not found",
-            err: null
-          })
-        }
-        res.send({
-          data: response,
+  const { id } = req.params;
+  UserType.findByIdAndUpdate(id, req.body, { new: true, runValidators: true })
+    .then((response) => {
+      if (!response) {
+        return res.status(404).send({
+          data: null,
+          message: "UserType not found",
+          err: null,
+        });
+      }
+      res.send({
+        data: response,
         message: "User Type updated successfully",
         err: null,
-        })
-      })
-      .catch((err) => {
-      res.status(500).send({ data: null, message: err.message, err: err });
+      });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        data: null,
+        message: err.message,
+        err: err,
+      });
     });
-}
+};
 
 module.exports = {
   get_userType,
   post_userType,
-  update_userType
+  update_userType,
 };
